@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resep Obat Pasien</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #1e88e5;
+        --primary-dark: #1565c0;
+        --gray-text: #666;
+        --gray-light: #e0e0e0;
+        --gray-bg: #f5f5f5;
+        --accent: #fff;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --success: #28a745;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: var(--gray-bg);
+        color: var(--gray-text);
+        line-height: 1.6;
+      }
+
+      .main-content {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .page-subtitle {
+        font-size: 1rem;
+        color: var(--gray-text);
+      }
+
+      .prescription-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 2rem;
+        gap: 1rem;
+      }
+
+      .input-group {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .input-group i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-text);
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid var(--gray-light);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .search-input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+      }
+
+      .prescription-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .prescription-card {
+        background: var(--accent);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary);
+      }
+
+      .prescription-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .prescription-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .prescription-details h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .prescription-date {
+        font-size: 0.875rem;
+        color: var(--gray-text);
+        background: var(--gray-bg);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+      }
+
+      .prescription-details p {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .medication-list {
+        margin-bottom: 1rem;
+      }
+
+      .medication-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .medication-name {
+        font-weight: 500;
+        color: var(--primary);
+      }
+
+      .medication-dose {
+        font-size: 0.875rem;
+        color: var(--gray-text);
+      }
+
+      .btn-icon {
+        background: none;
+        border: none;
+        color: var(--primary);
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-icon:hover {
+        color: var(--primary-dark);
+        transform: scale(1.1);
+      }
+
+      .prescription-table {
+        background: var(--accent);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .prescription-table h3 {
+        font-size: 1.25rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      .prescription-table table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .prescription-table th,
+      .prescription-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--gray-light);
+      }
+
+      .prescription-table th {
+        font-weight: 600;
+        color: var(--gray-text);
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 1rem;
+        }
+
+        .prescription-controls {
+          flex-direction: column;
+        }
+
+        .prescription-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .prescription-table {
+          overflow-x: auto;
+        }
+
+        .prescription-card {
+          padding: 1rem;
+        }
+      }
+      /* Gaya Umum untuk Tombol */
+      .back-button .btn {
+        display: inline-flex; /* Membuat tombol dan ikon sejajar */
+        align-items: center; /* Menjaga ikon dan teks agar sejajar vertikal */
+        padding: 10px 20px; /* Memberikan ruang pada tombol */
+        background-color: #e87c7c; /* Warna latar belakang tombol */
+        color: #ffffff; /* Warna teks */
+        font-size: 16px; /* Ukuran teks */
+        border-radius: 5px; /* Sudut tombol yang melengkung */
+        text-decoration: none; /* Menghapus garis bawah pada tautan */
+        transition: background-color 0.3s ease, transform 0.2s ease; /* Animasi transisi */
+      }
+
+      .back-button .btn i {
+        margin-right: 8px; /* Memberikan jarak antara ikon dan teks */
+      }
+
+      /* Efek hover ketika tombol disentuh atau diklik */
+      .back-button .btn:hover {
+        background-color: #5a6268; /* Warna latar belakang lebih gelap saat hover */
+        transform: translateY(-2px); /* Efek tombol sedikit terangkat */
+      }
+
+      /* Efek klik (active) */
+      .back-button .btn:active {
+        transform: translateY(0); /* Menghapus efek terangkat saat klik */
+        background-color: #545b62; /* Warna latar belakang lebih gelap saat diklik */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-content">
+      <section id="resep-obat">
+        <div class="page-header"></div>
+
+        <!-- Prescription Controls -->
+        <div class="prescription-controls">
+          <div class="input-group">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Cari berdasarkan tanggal atau obat..."
+              class="search-input"
+            />
+          </div>
+        </div>
+
+        <!-- Prescription Cards -->
+        <div class="prescription-grid">
+          <!-- Card 1 -->
+          <div class="prescription-card">
+            <div class="prescription-header">
+              <div class="prescription-details">
+                <h3>Resep Tifoid</h3>
+                <p><strong>Dokter:</strong> Dr. Budi Santoso</p>
+              </div>
+              <span class="prescription-date">22 Feb 2025</span>
+            </div>
+            <div class="medication-list">
+              <div class="medication-item">
+                <span class="medication-name">Paracetamol 500mg</span><br />
+                <span class="medication-dose">3 x 1 tablet setelah makan</span>
+              </div>
+              <div class="medication-item">
+                <span class="medication-name">Amoxicillin 500mg</span><br />
+                <span class="medication-dose">2 x 1 tablet sebelum makan</span>
+              </div>
+            </div>
+            <button class="btn-icon"><i class="fas fa-eye"></i></button>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="prescription-card">
+            <div class="prescription-header">
+              <div class="prescription-details">
+                <h3>Resep Rutin</h3>
+                <p><strong>Dokter:</strong> Dr. Sari Dewi</p>
+              </div>
+              <span class="prescription-date">15 Jan 2025</span>
+            </div>
+            <div class="medication-list">
+              <div class="medication-item">
+                <span class="medication-name">Vitamin C 1000mg</span><br />
+                <span class="medication-dose">1 x 1 tablet setelah makan</span>
+              </div>
+            </div>
+            <button class="btn-icon"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+
+        <!-- Prescription Table -->
+        <div class="prescription-table">
+          <h3>Semua Resep Obat</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Dokter</th>
+                <th>Obat</th>
+                <th>Dosis</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>22 Feb 2025</td>
+                <td>Dr. Budi Santoso</td>
+                <td>Paracetamol 500mg</td>
+                <td>3 x 1 tablet</td>
+                <td>
+                  <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>15 Jan 2025</td>
+                <td>Dr. Sari Dewi</td>
+                <td>Vitamin C 1000mg</td>
+                <td>1 x 1 tablet</td>
+                <td>
+                  <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Back Button -->
+        <div class="back-button">
+          <a href="dashboard-pasien" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Kembali
+          </a>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
